@@ -1,12 +1,13 @@
 import TilecloudControl from '@tilecloud/mbgl-tilecloud-control'
 import mapboxgl from 'mapbox-gl'
 
+const onceRendered = {}
+
 export const render = elementId => {
-  let onceRendered = false
   const onScrollEventHandler = () => {
     console.log('scrolling')
-    if (!onceRendered && isInVerticalView(elementId)) {
-      onceRendered = true
+    if (!onceRendered[elementId] && isInVerticalView(elementId)) {
+      onceRendered[elementId] = true
       console.log('start map rendering')
 
       fetch('./mapbox-gl.css')
@@ -19,7 +20,7 @@ export const render = elementId => {
         })
 
       const tilecloudMap = new mapboxgl.Map({
-        container: 'map',
+        container: elementId,
         style: 'https://tilecloud.github.io/tiny-tileserver/style.json',
         attributionControl: true,
         hash: true,
