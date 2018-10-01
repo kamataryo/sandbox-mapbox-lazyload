@@ -44,6 +44,8 @@ export const render = elementId => {
         resolve(map)
       }
     }
+
+    onScrollEventHandler()
     window.addEventListener('scroll', onScrollEventHandler, false)
   })
 }
