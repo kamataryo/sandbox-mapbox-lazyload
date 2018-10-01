@@ -28,9 +28,7 @@ export const render = elementId => {
             container: elementId,
             style: 'https://tilecloud.github.io/tiny-tileserver/style.json',
             attributionControl: true,
-            hash: true,
             localIdeographFontFamily: 'sans-serif',
-            interactive: true,
           })
 
           map.addControl(new mapboxgl.NavigationControl())
@@ -61,17 +59,6 @@ const isInView = elementId => {
   const elementLeft = documentLeft + rect.left
   const elementBottom = elementTop + element.offsetHeight
   const elementRight = elementLeft + element.offsetWidth
-
-  console.log({
-    elementBottom,
-    documentBottom,
-    elementTop,
-    documentTop,
-    elementRight,
-    documentRight,
-    elementLeft,
-    documentLeft,
-  })
 
   return (
     elementTop <= documentBottom &&
