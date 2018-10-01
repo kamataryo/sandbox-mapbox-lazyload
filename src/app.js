@@ -59,13 +59,24 @@ const isInView = elementId => {
   const rect = element.getBoundingClientRect()
   const elementTop = documentTop + rect.top
   const elementLeft = documentLeft + rect.left
-  const elementBottom = elementTop + element.style.height
-  const elementRight = elementLeft + element.style.width
+  const elementBottom = elementTop + element.offsetHeight
+  const elementRight = elementLeft + element.offsetWidth
+
+  console.log({
+    elementBottom,
+    documentBottom,
+    elementTop,
+    documentTop,
+    elementRight,
+    documentRight,
+    elementLeft,
+    documentLeft,
+  })
 
   return (
-    elementBottom <= documentBottom &&
-    elementTop >= documentTop &&
-    elementRight <= documentRight &&
-    elementLeft >= documentLeft
+    elementTop <= documentBottom &&
+    elementRight >= documentLeft &&
+    elementLeft <= documentRight &&
+    elementBottom >= documentTop
   )
 }
