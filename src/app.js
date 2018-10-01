@@ -7,11 +7,10 @@ const $css = Symbol('css')
 export const render = elementId => {
   return new Promise((resolve, reject) => {
     const onScrollEventHandler = () => {
-      console.log('scrolling')
-      if (!onceRendered[elementId] && isInVerticalView(elementId)) {
+      if (!onceRendered[elementId] && isInView(elementId)) {
         onceRendered[elementId] = true
-        console.log('start map rendering')
 
+        // load css once
         !onceRendered[$css] &&
           fetch('./mapbox-gl.css')
             .then(res => res.text())
@@ -50,13 +49,23 @@ export const render = elementId => {
   })
 }
 
-const isInVerticalView = elementId => {
+const isInView = elementId => {
   const documentTop = window.pageYOffset || document.documentElement.scrollTop
+  const documentLeft = window.pageXOffset || document.documentElement.scrollLeft
   const documentBottom = documentTop + window.innerHeight
+  const documentRight = documentLeft + window.innerWidth
 
   const element = document.getElementById(elementId)
-  const elementTop = documentTop + element.getBoundingClientRect().top
+  const rect = element.getBoundingClientRect()
+  const elementTop = documentTop + rect.top
+  const elementLeft = documentLeft + rect.left
   const elementBottom = elementTop + element.style.height
+  const elementRight = elementLeft + element.style.width
 
-  return elementBottom <= documentBottom && elementTop >= documentTop
+  return (
+    elementBottom <= documentBottom &&
+    elementTop >= documentTop &&
+    elementRight <= documentRight &&
+    elementLeft >= documentLeft
+  )
 }
