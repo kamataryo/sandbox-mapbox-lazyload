@@ -2,4 +2,4 @@
 
 ## DEMO
 
-https://kamataryo.github.io/sandbox-mapbox-lazyload
+https://kamataryo.github.io/sandbox-mapbox-lazyload/index.html
