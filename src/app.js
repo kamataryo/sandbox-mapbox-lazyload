@@ -1,8 +1,15 @@
 import TilecloudControl from '@tilecloud/mbgl-tilecloud-control'
 import mapboxgl from 'mapbox-gl'
 
+let cssText = ''
 const onceRendered = {}
-const $css = Symbol('css')
+const $css = Symbol('css fetched')
+const head = document.getElementsByTagName('head')[0]
+
+export const preload = () =>
+  fetch('./mapbox-gl.css')
+    .then(res => res.text())
+    .then(data => (cssText = data.replace(/\n/g, '')))
 
 export const render = elementId => {
   return new Promise((resolve, reject) => {
@@ -10,17 +17,13 @@ export const render = elementId => {
       if (!onceRendered[elementId] && isInView(elementId)) {
         onceRendered[elementId] = true
 
-        // load css once
-        !onceRendered[$css] &&
-          fetch('./mapbox-gl.css')
-            .then(res => res.text())
-            .then(cssText => {
-              const head = document.getElementsByTagName('head')[0]
-              const style = document.createElement('style')
-              style.innerText = cssText.replace(/\n/g, '')
-              head.appendChild(style)
-            })
-        onceRendered[$css] = true
+        // write css once
+        if (!onceRendered[$css]) {
+          const style = document.createElement('style')
+          style.innerText = cssText
+          head.appendChild(style)
+          onceRendered[$css] = true
+        }
 
         let map
         try {
