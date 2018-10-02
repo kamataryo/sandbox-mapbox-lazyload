@@ -65,10 +65,10 @@ const isInView = (elementId, { buffer }) => {
 
   const element = document.getElementById(elementId)
   const rect = element.getBoundingClientRect()
-  const elementTop = documentTop + rect.top - buffer
-  const elementLeft = documentLeft + rect.left - buffer
-  const elementBottom = elementTop + element.offsetHeight + 2 * buffer
-  const elementRight = elementLeft + element.offsetWidth + 2 * buffer
+  const elementTop = documentTop + rect.top + buffer
+  const elementLeft = documentLeft + rect.left + buffer
+  const elementBottom = elementTop + element.offsetHeight - 2 * buffer
+  const elementRight = elementLeft + element.offsetWidth - 2 * buffer
 
   return (
     elementTop <= documentBottom &&

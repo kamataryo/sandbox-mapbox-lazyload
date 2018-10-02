@@ -1,7 +1,7 @@
 // import 'babel-polyfill'
 import { preload, render } from './app'
 
-const mapIds = [
+const mapElementIds = [
   'map-0',
   'map-1',
   'map-2',
@@ -13,27 +13,39 @@ const mapIds = [
   'map-8',
 ]
 
-const createMapOpts = elementId => ({
-  container: elementId,
-  style: 'https://tilecloud.github.io/tiny-tileserver/style.json',
-  attributionControl: true,
-  localIdeographFontFamily: 'sans-serif',
-})
+const mapOpts = mapElementIds.reduce(
+  (prev, mapElementId) => ({
+    ...prev,
+    [mapElementId]: {
+      container: mapElementId,
+      style: 'https://tilecloud.github.io/tiny-tileserver/style.json',
+      attributionControl: true,
+      localIdeographFontFamily: 'sans-serif',
+    },
+  }),
+  {},
+)
 
 const lazyOpts = {
-  buffer: 100, // create element buffer wrap to early loading
+  buffer: -100, // [px]: create element buffer wrap to early loading
 }
 
 const main = async () => {
+  // load assets (CSS) and wait to be used
   await preload()
+
+  // promise map rendering
   await Promise.all(
-    mapIds.map(mapId =>
-      render(createMapOpts(mapId), lazyOpts).then(() =>
-        alert(`started rendering ${mapId}`),
-      ),
+    mapElementIds.map(mapId =>
+      render(mapOpts[mapId], lazyOpts).then(map => {
+        alert(`started rendering ${mapId}`)
+        console.log({ map })
+      }),
     ),
   )
+
   alert('all maps has been rendered!')
 }
 
+// GO!
 main()
