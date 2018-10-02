@@ -18,7 +18,8 @@ const mapOpts = mapElementIds.reduce(
     ...prev,
     [mapElementId]: {
       container: mapElementId,
-      style: 'https://tilecloud.github.io/tiny-tileserver/style.json',
+      // NOTE: customized!
+      styleURL: 'https://tilecloud.github.io/tiny-tileserver/style.json',
       attributionControl: true,
       localIdeographFontFamily: 'sans-serif',
     },
@@ -26,13 +27,15 @@ const mapOpts = mapElementIds.reduce(
   {},
 )
 
+const styleURLs = Object.values(mapOpts).map(opt => opt.styleURL)
+
 const lazyOpts = {
   buffer: -100, // [px]: create element buffer wrap to early loading
 }
 
 const main = async () => {
-  // load assets (CSS) and wait to be used
-  await preload()
+  // load assets (CSS and style.json) and wait to be used
+  await preload(styleURLs)
 
   // promise map rendering
   await Promise.all(

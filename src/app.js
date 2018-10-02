@@ -1,12 +1,12 @@
 import TilecloudControl from '@tilecloud/mbgl-tilecloud-control'
 import mapboxgl from 'mapbox-gl'
 
-let cssText = ''
+const preloadedStyles = {}
 const onceRendered = {}
-const $css = Symbol('css fetched')
-const head = document.getElementsByTagName('head')[0]
+
 const defaultMapOpts = {
-  style: 'https://tilecloud.github.io/tiny-tileserver/style.json',
+  style: void 0,
+  styleURL: 'https://tilecloud.github.io/tiny-tileserver/style.json',
   attributionControl: true,
   localIdeographFontFamily: 'sans-serif',
 }
@@ -14,13 +14,41 @@ const defaultLazyOpts = {
   buffer: 0,
 }
 
-export const preload = () =>
+const fetchStyles = styleURLs =>
+  styleURLs
+    // .filter((x, i, self) => self.indexOf(x) === i) // make unique
+    .map(url =>
+      fetch(url)
+        .then(res => res.json())
+        .then(data => ({ data, url })),
+    )
+
+export const preload = styleURLs => {
   fetch('./mapbox-gl.css')
     .then(res => res.text())
-    .then(data => (cssText = data.replace(/\n/g, '')))
+    .then(data => {
+      // write css
+      const head = document.getElementsByTagName('head')[0]
+      const style = document.createElement('style')
+      style.innerText = data.replace(/\n/g, '')
+      head.appendChild(style)
+    })
+
+  // preload all style.json
+  return Promise.all(fetchStyles(styleURLs)).then(data => {
+    data.forEach(
+      ({ data, url }) => /* store style.json */ (preloadedStyles[url] = data),
+    )
+    return { ready: true }
+  })
+}
 
 export const render = (mapOpts, lazyOpts = {}) => {
-  const mapOptions = { ...defaultMapOpts, ...mapOpts }
+  const mapOptions = {
+    ...defaultMapOpts,
+    ...mapOpts,
+    style: preloadedStyles[mapOpts.styleURL] || {},
+  }
   const lazyOptions = { ...defaultLazyOpts, ...lazyOpts }
   const elementId = mapOptions.container
 
@@ -29,17 +57,9 @@ export const render = (mapOpts, lazyOpts = {}) => {
       if (!onceRendered[elementId] && isInView(elementId, lazyOptions)) {
         onceRendered[elementId] = true
 
-        // write css once
-        if (!onceRendered[$css]) {
-          const style = document.createElement('style')
-          style.innerText = cssText
-          head.appendChild(style)
-          onceRendered[$css] = true
-        }
-
         let map
         try {
-          map = new mapboxgl.Map(mapOpts)
+          map = new mapboxgl.Map(mapOptions)
 
           map.addControl(new mapboxgl.NavigationControl())
           map.addControl(new mapboxgl.GeolocateControl())
