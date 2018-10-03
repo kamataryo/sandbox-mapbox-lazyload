@@ -8,7 +8,7 @@
     "prestart": "npm run prebuild",
     "prebuild:sample": "npm run prebuild",
     "start": "webpack-dev-server --progress --colors --inline --watch --config ./sample/webpack.config.js",
-    "build:sample": "webpack -p --config ./sample/webpack.config.js",
+    "build:sample": "[ -d ./docs ] && rm -rf ./docs ; webpack -p --config ./sample/webpack.config.js",
     "build": "webpack -p",
     "format": "prettier-eslint \"./src/**/*.js\" --write",
     "test": "eslint \"src/**/*.js\""
