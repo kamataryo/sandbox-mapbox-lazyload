@@ -62,8 +62,8 @@ typings/
 # next.js build output
 .next
 
-//
 .cache
 .DS_Store
 .eslintcache
 dist
+temp

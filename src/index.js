@@ -1,54 +1,97 @@
-// import 'babel-polyfill'
-import { preload, render } from './app'
+import TilecloudControl from '@tilecloud/mbgl-tilecloud-control'
+import mapboxgl from 'mapbox-gl'
+import mapboxStyleText from '../temp/mapbox-gl.css'
 
-const mapElementIds = [
-  'map-0',
-  'map-1',
-  'map-2',
-  'map-3',
-  'map-4',
-  'map-5',
-  'map-6',
-  'map-7',
-  'map-8',
-]
+const preloadedStyles = {}
+const onceRendered = {}
 
-const mapOpts = mapElementIds.reduce(
-  (prev, mapElementId) => ({
-    ...prev,
-    [mapElementId]: {
-      container: mapElementId,
-      // NOTE: customized!
-      styleURL: 'https://tilecloud.github.io/tiny-tileserver/style.json',
-      attributionControl: true,
-      localIdeographFontFamily: 'sans-serif',
-    },
-  }),
-  {},
-)
-
-const styleURLs = Object.values(mapOpts).map(opt => opt.styleURL)
-
-const lazyOpts = {
-  buffer: -100, // [px]: create element buffer wrap to early loading
+const defaultMapOpts = {
+  style: void 0,
+  styleURL: 'https://tilecloud.github.io/tiny-tileserver/style.json',
+  attributionControl: true,
+  localIdeographFontFamily: 'sans-serif',
+}
+const defaultLazyOpts = {
+  buffer: 0,
 }
 
-const main = async () => {
-  // load assets (CSS and style.json) and wait to be used
-  await preload(styleURLs)
+const fetchStyles = styleURLs =>
+  styleURLs
+    // .filter((x, i, self) => self.indexOf(x) === i) // make unique
+    .map(url =>
+      fetch(url)
+        .then(res => res.json())
+        .then(data => ({ data, url })),
+    )
 
-  // promise map rendering
-  await Promise.all(
-    mapElementIds.map(mapId =>
-      render(mapOpts[mapId], lazyOpts).then(map => {
-        alert(`started rendering ${mapId}`)
-        console.log({ map })
-      }),
-    ),
+export const preload = styleURLs => {
+  console.log(mapboxStyleText)
+  // write css
+  const head = document.getElementsByTagName('head')[0]
+  const style = document.createElement('style')
+  style.innerText = mapboxStyleText.replace(/\n/g, '')
+  head.appendChild(style)
+
+  // preload all style.json
+  return Promise.all(fetchStyles(styleURLs)).then(data => {
+    data.forEach(
+      ({ data, url }) => /* store style.json */ (preloadedStyles[url] = data),
+    )
+    return { ready: true }
+  })
+}
+
+export const render = (mapOpts, lazyOpts = {}) => {
+  const mapOptions = {
+    ...defaultMapOpts,
+    ...mapOpts,
+    style: preloadedStyles[mapOpts.styleURL] || {},
+  }
+  const lazyOptions = { ...defaultLazyOpts, ...lazyOpts }
+  const elementId = mapOptions.container
+
+  return new Promise((resolve, reject) => {
+    const onScrollEventHandler = () => {
+      if (!onceRendered[elementId] && isInView(elementId, lazyOptions)) {
+        onceRendered[elementId] = true
+
+        let map
+        try {
+          map = new mapboxgl.Map(mapOptions)
+
+          map.addControl(new mapboxgl.NavigationControl())
+          map.addControl(new mapboxgl.GeolocateControl())
+          map.addControl(new TilecloudControl())
+        } catch (e) {
+          reject(e)
+        }
+
+        resolve(map)
+      }
+    }
+
+    onScrollEventHandler()
+    window.addEventListener('scroll', onScrollEventHandler, false)
+  })
+}
+
+const isInView = (elementId, { buffer }) => {
+  const documentTop = window.pageYOffset || document.documentElement.scrollTop
+  const documentLeft = window.pageXOffset || document.documentElement.scrollLeft
+  const documentBottom = documentTop + window.innerHeight
+  const documentRight = documentLeft + window.innerWidth
+
+  const element = document.getElementById(elementId)
+  const rect = element.getBoundingClientRect()
+  const elementTop = documentTop + rect.top + buffer
+  const elementLeft = documentLeft + rect.left + buffer
+  const elementBottom = elementTop + element.offsetHeight - 2 * buffer
+  const elementRight = elementLeft + element.offsetWidth - 2 * buffer
+
+  return (
+    elementTop <= documentBottom &&
+    elementRight >= documentLeft &&
+    elementLeft <= documentRight &&
+    elementBottom >= documentTop
   )
-
-  alert('all maps has been rendered!')
 }
-
-// GO!
-main()
