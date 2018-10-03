@@ -20,3 +20,33 @@ $ npm start
 ```shell
 $ npm run build # see ./dist
 ```
+
+## usage
+
+```javascript
+import { render } from '@kamataryo/sandbox-mapbox-lazyload'
+
+render(
+  {
+    // mapbox gl option https://www.mapbox.com/mapbox-gl-js/api/#map
+    container: 'map' // id
+    styleURL: 'https://example.com/style.json', // style => styleURL
+    attributionControl: true,
+    localIdeographFontFamily: 'sans-serif',
+  },
+  {
+    buffer: 100, // map box size extending
+  }
+)
+  .then(map => {
+    console.log('rendering started!')
+    map.addLayer()
+  })
+```
+
+## idea
+
+```html
+<!-- returns map with { width:100%, height: 100% } -->
+<iframe src="https://example.com/embed?apiKey=xxxxxxx&style=foo" width="500" height="500"></iframe>
+```
