@@ -26,22 +26,28 @@ $ npm run build # see ./dist
 ```javascript
 import { render } from '@kamataryo/sandbox-mapbox-lazyload'
 
-render(
-  {
-    // mapbox gl option https://www.mapbox.com/mapbox-gl-js/api/#map
-    container: 'map' // id
-    styleURL: 'https://example.com/style.json', // style => styleURL
-    attributionControl: true,
-    localIdeographFontFamily: 'sans-serif',
-  },
-  {
-    buffer: 100, // map box size extending
-  }
+render(mapOptions, lazyOptions).then(map => {
+  console.log('rendering started!')
+  map.addLayer()
+})
+```
+
+```javascript
+// mapOptions
+{
+  // mapbox gl option https://www.mapbox.com/mapbox-gl-js/api/#map
+  container: 'map' // id
+  styleURL: 'https://example.com/style.json', // style => styleURL
+  attributionControl: true,
+  localIdeographFontFamily: 'sans-serif',
+  ...
+}
+
+// lazyOptions
+{
+  buffer: 100, // map box size extending
+}
 )
-  .then(map => {
-    console.log('rendering started!')
-    map.addLayer()
-  })
 ```
 
 ## idea
