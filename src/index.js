@@ -25,7 +25,6 @@ const fetchStyles = styleURLs =>
     )
 
 export const preload = styleURLs => {
-  console.log(mapboxStyleText)
   // write css
   const head = document.getElementsByTagName('head')[0]
   const style = document.createElement('style')

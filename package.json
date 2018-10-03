@@ -1,7 +1,8 @@
 {
   "name": "@kamataryo/sandbox-mapbox-lazyload",
   "version": "0.0.0",
-  "description": "",
+  "description": "Lazy mapbox renderring.",
+  "main": "dist/main.js",
   "scripts": {
     "prebuild": "./bin/prebuild.sh",
     "prestart": "npm run prebuild",
@@ -33,11 +34,11 @@
     "prettier-eslint-cli": "^4.7.1",
     "webpack": "^4.20.2",
     "webpack-cli": "^3.1.1",
-    "webpack-dev-server": "^3.1.9"
-  },
-  "dependencies": {
+    "webpack-dev-server": "^3.1.9",
     "@tilecloud/mbgl-tilecloud-control": "^0.3.5",
     "babel-polyfill": "^6.26.0",
     "mapbox-gl": "0.47.0"
+  },
+  "dependencies": {
   }
 }

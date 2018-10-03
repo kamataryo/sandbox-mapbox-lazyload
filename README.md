@@ -18,5 +18,5 @@ $ npm start
 ## build
 
 ```shell
-$ npm run build # see ./docs
+$ npm run build # see ./dist
 ```
