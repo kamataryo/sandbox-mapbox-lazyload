@@ -1,5 +1,5 @@
 import 'babel-polyfill'
-import { preload, render } from '../src/index'
+import { render } from '../src/index'
 
 const mapElementIds = [
   'map-0',
@@ -19,7 +19,7 @@ const mapOpts = mapElementIds.reduce(
     [mapElementId]: {
       container: mapElementId,
       // NOTE: customized!
-      styleURL: 'https://tilecloud.github.io/tiny-tileserver/style.json',
+      style: 'https://tilecloud.github.io/tiny-tileserver/style.json',
       attributionControl: true,
       localIdeographFontFamily: 'sans-serif',
     },
@@ -27,16 +27,11 @@ const mapOpts = mapElementIds.reduce(
   {},
 )
 
-const styleURLs = Object.values(mapOpts).map(opt => opt.styleURL)
-
 const lazyOpts = {
   buffer: -100, // [px]: create element buffer wrap to early loading
 }
 
 const main = async () => {
-  // load assets (CSS and style.json) and wait to be used
-  await preload(styleURLs)
-
   // promise map rendering
   await Promise.all(
     mapElementIds.map(mapId =>
