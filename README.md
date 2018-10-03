@@ -37,7 +37,7 @@ render(mapOptions, lazyOptions).then(map => {
 {
   // mapbox gl option https://www.mapbox.com/mapbox-gl-js/api/#map
   container: 'map' // id
-  styleURL: 'https://example.com/style.json', // style => styleURL
+  style: 'https://example.com/style.json',
   attributionControl: true,
   localIdeographFontFamily: 'sans-serif',
   ...

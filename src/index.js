@@ -33,20 +33,20 @@ export const render = (mapOpts, lazyOpts = {}) => {
             let map
             try {
               map = new mapboxgl.Map(mapOptions)
-
               map.addControl(new mapboxgl.NavigationControl())
               map.addControl(new mapboxgl.GeolocateControl())
               map.addControl(new TilecloudControl())
             } catch (e) {
               reject(e)
+            } finally {
+              window.removeEventListener('scroll', onScrollEventHandler)
+              resolve(map)
             }
-
-            resolve(map)
           }
         }
 
-        onScrollEventHandler()
         window.addEventListener('scroll', onScrollEventHandler, false)
+        onScrollEventHandler()
       }),
   )
 }

@@ -18,7 +18,6 @@ const mapOpts = mapElementIds.reduce(
     ...prev,
     [mapElementId]: {
       container: mapElementId,
-      // NOTE: customized!
       style: 'https://tilecloud.github.io/tiny-tileserver/style.json',
       attributionControl: true,
       localIdeographFontFamily: 'sans-serif',
