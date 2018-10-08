@@ -8,7 +8,7 @@ import defaultOptions from './default-options.json'
 import defaultControls from './default-controls'
 
 /**
- * stores map container ids already rendered
+ * stores map container ids already rendered to prevent run twice
  * @type {Object}
  */
 const onceRendered = {}
@@ -20,16 +20,27 @@ const {
 
 /**
  * render map if it in users view
- * @param  {object} [mapOpts={}]  map options
- * @param  {object} [lazyOpts={}] lazy rendering options
- * @return {Promise}              Promise for render started
+ * @param  {object|string} arg           map options
+ * @param  {object}        [lazyOpts={}] lazy rendering options
+ * @return {Promise}                     Promise for render started
  */
-export const render = (mapOpts = {}, lazyOpts = {}) => {
+export const render = (arg, lazyOpts = {}) => {
+  let mapOpts
+
+  if (typeof arg === 'string') {
+    mapOpts = { container: arg }
+  } else if (typeof arg === 'object' && typeof arg.container === 'string') {
+    mapOpts = arg
+  } else {
+    throw new Error('Invalid argument: ' + JSON.stringify(arg))
+  }
+
   // load once
   loadCssOnce()
 
   const mapOptions = { ...defaultMapOptions, ...mapOpts }
   const lazyOptions = { ...defaultLazyOptions, ...lazyOpts }
+
   const elementId = mapOptions.container
 
   return fetchStyle(mapOptions.style).then(
