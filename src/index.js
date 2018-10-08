@@ -1,31 +1,41 @@
-import TilecloudControl from '@tilecloud/mbgl-tilecloud-control'
 import mapboxgl from 'mapbox-gl'
+
 import { loadCssOnce } from './lib/css-loader'
 import { fetchStyle } from './lib/requests'
 import { isInView } from './lib/check-element-bounds'
 
+import defaultOptions from './default-options.json'
+import defaultControls from './default-controls'
+
+/**
+ * stores map container ids already rendered
+ * @type {Object}
+ */
 const onceRendered = {}
 
-const defaultMapOpts = {
-  style: 'https://tilecloud.github.io/tiny-tileserver/style.json',
-  attributionControl: true,
-  localIdeographFontFamily: 'sans-serif',
-}
-const defaultLazyOpts = {
-  buffer: 0,
-}
+const {
+  mapOptions: defaultMapOptions,
+  lazyOptions: defaultLazyOptions,
+} = defaultOptions
 
-export const render = (mapOpts, lazyOpts = {}) => {
+/**
+ * render map if it in users view
+ * @param  {object} [mapOpts={}]  map options
+ * @param  {object} [lazyOpts={}] lazy rendering options
+ * @return {Promise}              Promise for render started
+ */
+export const render = (mapOpts = {}, lazyOpts = {}) => {
   // load once
   loadCssOnce()
 
-  const mapOptions = { ...defaultMapOpts, ...mapOpts }
-  const lazyOptions = { ...defaultLazyOpts, ...lazyOpts }
+  const mapOptions = { ...defaultMapOptions, ...mapOpts }
+  const lazyOptions = { ...defaultLazyOptions, ...lazyOpts }
   const elementId = mapOptions.container
 
   return fetchStyle(mapOptions.style).then(
     () =>
       new Promise((resolve, reject) => {
+        // define scroll handler
         const onScrollEventHandler = () => {
           if (!onceRendered[elementId] && isInView(elementId, lazyOptions)) {
             onceRendered[elementId] = true
@@ -33,19 +43,21 @@ export const render = (mapOpts, lazyOpts = {}) => {
             let map
             try {
               map = new mapboxgl.Map(mapOptions)
-              map.addControl(new mapboxgl.NavigationControl())
-              map.addControl(new mapboxgl.GeolocateControl())
-              map.addControl(new TilecloudControl())
+              defaultControls.forEach(map.addControl)
             } catch (e) {
               reject(e)
             } finally {
+              // handler should fire once
               window.removeEventListener('scroll', onScrollEventHandler)
               resolve(map)
             }
           }
         }
 
+        // enable handler
         window.addEventListener('scroll', onScrollEventHandler, false)
+
+        // detect whether map are already in view
         onScrollEventHandler()
       }),
   )

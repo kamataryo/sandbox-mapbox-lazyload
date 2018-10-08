@@ -45,14 +45,16 @@ render(mapOptions, lazyOptions).then(map => {
 
 // lazyOptions
 {
-  buffer: 100, // map box size extending
+  buffer: 100, // map box size extending. The larger, the earlier your map rendering starts.
 }
 )
 ```
 
-## idea
+## ideas
 
-```html
-<!-- returns map with { width:100%, height: 100% } -->
-<iframe src="https://example.com/embed?apiKey=xxxxxxx&style=foo" width="500" height="500"></iframe>
-```
+- How shipping
+
+  ```html
+  <!-- returns map with { width:100%, height: 100% } -->
+  <iframe src="https://example.com/embed?apiKey=xxxxxxx&style=foo" width="500" height="500"></iframe>
+  ```
