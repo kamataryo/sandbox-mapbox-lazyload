@@ -4,7 +4,7 @@ import { loadCssOnce } from './lib/css-loader'
 import { fetchStyle } from './lib/requests'
 import { isInView } from './lib/check-element-bounds'
 
-import defaultOptions from './default-options.json'
+import defaultOptions from './default-options'
 import defaultControls from './default-controls'
 
 /**
