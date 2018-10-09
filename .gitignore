@@ -64,7 +64,9 @@ typings/
 
 .cache
 .DS_Store
-.eslintcache
-dist
-temp
-.jestcache
+src/lib/mapbox-gl.css.js
+
+# distribution directories
+/dist
+/lib
+# /docs

@@ -2,14 +2,14 @@
   "name": "@kamataryo/sandbox-mapbox-lazyload",
   "version": "0.0.0",
   "description": "Lazy mapbox renderring.",
-  "main": "dist/main.js",
+  "main": "dist/index.js",
   "scripts": {
     "prebuild": "./bin/prebuild.sh",
     "prestart": "npm run prebuild",
     "prebuild:sample": "npm run prebuild",
     "start": "webpack-dev-server --progress --colors --inline --watch --config ./sample/webpack.config.js",
     "build:sample": "[ -d ./docs ] && rm -rf ./docs ; webpack -p --config ./sample/webpack.config.js && touch ./docs/.nojekyll",
-    "build": "webpack -p",
+    "build": "[ -d ./dist ] && rm -rf ./dist ;babel ./src --out-dir ./dist --source-maps",
     "format": "prettier-eslint \"./src/**/*.js\" --write",
     "test": "eslint \"src/**/*.js\""
   },
@@ -24,14 +24,13 @@
   },
   "homepage": "https://github.com/kamataryo/sandbox-mapbox-lazyload#readme",
   "devDependencies": {
+    "@babel/cli": "^7.1.2",
     "@babel/core": "^7.1.2",
     "@babel/preset-env": "^7.1.0",
-    "@tilecloud/mbgl-tilecloud-control": "^0.3.5",
     "babel-loader": "^8.0.4",
     "babel-polyfill": "^6.26.0",
     "eslint": "^5.3.0",
     "html-webpack-plugin": "^3.2.0",
-    "mapbox-gl": "0.47.0",
     "prettier": "^1.14.3",
     "prettier-eslint": "^8.8.2",
     "prettier-eslint-cli": "^4.7.1",
@@ -39,5 +38,8 @@
     "webpack-cli": "^3.1.1",
     "webpack-dev-server": "^3.1.9"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@tilecloud/mbgl-tilecloud-control": "^0.3.5",
+    "mapbox-gl": "^0.50.0-beta.1"
+  }
 }
